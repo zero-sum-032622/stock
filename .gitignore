@@ -3,3 +3,4 @@ result
 *.csv
 TSE.csv:Zone.Identifier
 .cache
+*.log
