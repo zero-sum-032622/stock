@@ -1,6 +1,5 @@
 __pycache__
 result
-*.csv
 TSE.csv:Zone.Identifier
 .cache
 *.log
