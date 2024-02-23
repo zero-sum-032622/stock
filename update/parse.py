@@ -1,7 +1,8 @@
 import os
 import sys
+sys.path.append('..')
 import pandas as pd
-import utils
+import libs.utils as utils
 import mplfinance as mpl
 import datetime as dt
 
