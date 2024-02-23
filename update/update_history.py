@@ -2,7 +2,8 @@ import sys
 import datetime as dt
 import pandas as pd
 import yfinance as yf
-import utils
+sys.path.append('..')
+import libs.utils as utils
 yf.pdr_override()
 
 ifname: str = sys.argv[1]
