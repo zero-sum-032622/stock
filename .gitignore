@@ -3,3 +3,6 @@ result
 TSE.csv:Zone.Identifier
 .cache
 *.log
+.coverage
+coverage.xml
+db.sqlite
