@@ -23,7 +23,8 @@
 				"ms-ceintl.vscode-language-pack-ja",
 				"ms-python.debugpy",
 				"ms-python.python",
-				"ms-python.vscode-pylance"
+				"ms-python.vscode-pylance",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		}
 	}

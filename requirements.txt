@@ -3,3 +3,4 @@ mplfinance
 pysqlite3
 fastapi
 uvicorn
+pytest-cov
