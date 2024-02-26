@@ -6,6 +6,7 @@
     "python.testing.pytestArgs": [
         "--cov=src",
         "--cov-report",
-        "xml"
+        "xml",
+        "--log-cli-level=DEBUG"
     ]
 }
