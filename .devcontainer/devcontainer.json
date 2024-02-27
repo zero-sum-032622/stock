@@ -6,7 +6,9 @@
 		"context": "..",
 		"dockerfile": "Dockerfile"
 	},
-
+    "containerEnv": {
+        "TZ": "Asia/Tokyo"
+    },
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 

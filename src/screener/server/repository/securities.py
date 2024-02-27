@@ -4,7 +4,7 @@ import sqlite3 as sql
 import logging
 from collections.abc import Iterator
 import settings
-from screener.server.models.security import Security
+from screener.server.models.security import Security, Market
 
 class Securities:
     __logger: logging.Logger = logging.getLogger(__name__)
@@ -22,12 +22,18 @@ class Securities:
         conn.close()
         self.__logger.debug(f'get {len(self.__itmes)} items.')
 
-    def codes(self, market:str = 'プライム（内国株式）', add_t: bool = True) -> Iterator[str]:
+    def items(self, market: Market = Market.PRIME) -> Iterator[Security]:
+        if market is None:
+            return self.__itmes
+        else:
+            return filter(lambda s: s.market == market.value, self.__itmes)
+
+    def codes(self, market: Market = Market.PRIME, add_t: bool = True) -> Iterator[str]:
         suffix = '.T' if add_t else ''
         if market is None:
             return map(lambda s: str(s.code) + suffix, self.__itmes)
         else:
-            return map(lambda s: str(s.code) + suffix, filter(lambda s: s.market == market, self.__itmes))
+            return map(lambda s: str(s.code) + suffix, filter(lambda s: s.market == market.value, self.__itmes))
 
 
 if __name__ == '__main__':

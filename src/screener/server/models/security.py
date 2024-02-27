@@ -1,4 +1,20 @@
 import pandas as pd
+from enum import Enum
+
+class Market(Enum):
+    PRIME = 'プライム（内国株式）'
+    STANDARD = 'スタンダード（内国株式）'
+    GROWTH = 'グロース（内国株式）'
+
+    PRIME_F = 'プライム（外国株式）'
+    STANDARD_F = 'スタンダード（外国株式）'
+    GROWTH_F = 'グロース（外国株式）'
+
+    ETF = 'ETF・ETN'
+    REIT = 'REIT・ベンチャーファンド・カントリーファンド・インフラファンド'
+    INVESTMENT = '出資証券'
+
+
 
 class Security:
     def __init__(self, code: int, name: str, market: str, industory33: str, industory17: str, size: str) -> None:
