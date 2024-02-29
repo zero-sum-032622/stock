@@ -10,6 +10,13 @@ def test_update():
     securities = Securities()
     h = History()
     h.update(islice(securities.items(Market.PRIME), 3), dt.date(2024, 2, 19), dt.date(2024, 2, 25))
+    conn = sql.connect(settings.DB_PATH)
+    try:
+        cur = conn.cursor()
+        cur.execute(f'SELECT COUNT(*) FROM {History.table()}')
+        assert cur.fetchone()[0] == 12
+    finally:
+        conn.close()
 
 def test_create_table():
     h = History()
