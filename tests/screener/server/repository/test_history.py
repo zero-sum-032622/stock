@@ -6,6 +6,11 @@ import settings
 from screener.server.repository.history import History
 from screener.server.repository.securities import Securities, Market
 
+@pytest.fixture(scope='session')
+def db():
+    settings.DB_PATH = '/tmp/test.sqlite'
+
+
 def test_update():
     securities = Securities()
     h = History()
@@ -29,3 +34,10 @@ def test_create_table():
         cur.close()
     finally:
         conn.close()
+
+def test_get_history():
+    h = History()
+    df = h.get_history()
+    assert len(df) == 12 
+    df = h.get_history(1301)
+    assert len(df) == 4

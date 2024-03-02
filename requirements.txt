@@ -4,3 +4,5 @@ pysqlite3
 fastapi
 uvicorn
 pytest-cov
+pytest-mock
+streamlit

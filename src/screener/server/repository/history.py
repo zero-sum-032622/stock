@@ -42,6 +42,29 @@ class History:
         finally:
             con.close()
 
+    def get_history(self, code: str = None) -> pd.DataFrame:
+        query = f'SELECT date, code, close high, low, open, volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
+        self.__logger.debug(f'query = {query}')
+        con = sql.connect(settings.DB_PATH)
+        try:
+            df = pd.read_sql_query(query, con)
+        except Exception as e:
+            self.__logger.error(traceback.format_exc())
+        finally:
+            con.close()
+        return df
+
+    def latest(self) -> dt.date:
+        con = sql.connect(settings.DB_PATH)
+        try:
+            cur = con.cursor() 
+            cur.execute('SELECT MAX(date)')
+            cur.close()
+        except Exception as e:
+            self.__logger.error(traceback.format_exc())
+        finally:
+            con.close()
+
     
     def create_table(self) -> None:
         query: str = f'''CREATE TABLE IF NOT EXISTS {self.table()} (
