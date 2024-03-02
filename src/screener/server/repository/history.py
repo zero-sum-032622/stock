@@ -25,7 +25,7 @@ class History:
         self.__logger.info(f'down load data: tickers: {len(tickers)}, begin: {begin}, end: {end}')
         df: pd.DataFrame = yf.download(tickers, start=begin, end=end)
         con = sql.connect(settings.DB_PATH)
-        stmt: str = f'REPLACE INTO {self.table()} (Date, CODE, Adj_Close, Close, High, Low, Open, Volume) values(?, ?, ?, ?, ?, ?, ?, ?)'
+        stmt: str = f'REPLACE INTO {self.table()} (date, code, adj_close, close, high, low, open, volume) values(?, ?, ?, ?, ?, ?, ?, ?)'
         try:
             cur = con.cursor()
             for s in sec:
@@ -45,15 +45,15 @@ class History:
     
     def create_table(self) -> None:
         query: str = f'''CREATE TABLE IF NOT EXISTS {self.table()} (
-            Date TEXT NOT NULL,
-            CODE INTEGER NOT NULL,
-            Adj_Close NUMBER,
-            Close NUMBER,
-            High NUMBER,
-            Low NUMBER,
-            Open NUMBER,
-            Volume NUMBER,
-            PRIMARY KEY(Date, CODE)
+            date TEXT NOT NULL,
+            code INTEGER NOT NULL,
+            adj_close NUMBER,
+            close NUMBER,
+            high NUMBER,
+            low NUMBER,
+            open NUMBER,
+            volume NUMBER,
+            PRIMARY KEY(date, code)
         );'''
         self.__logger.debug(query)
         conn = sql.connect(settings.DB_PATH)
