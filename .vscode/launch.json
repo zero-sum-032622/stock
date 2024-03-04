@@ -14,6 +14,23 @@
             "cwd": "${workspaceFolder}",
             "purpose": ["debug-test"],
             "env": { "PYTEST_ADDOPTS": "--no-cov" }
+        },
+        {
+            "name": "Web",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "purpose": ["debug-test"],
+            "env": {
+                "PYTEST_ADDOPTS": "--no-cov"
+            },
+            "args": [
+                "run",
+                "src/screener/server/app.py"
+            ]
         }
     ]
 }

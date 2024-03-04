@@ -2,9 +2,10 @@ import sys
 import pandas as pd
 import sqlite3 as sql
 import logging
+import traceback
 from collections.abc import Iterator
 import settings
-from screener.server.models.security import Security, Market
+from screener.server.models.security import Security, Market, MarketNames
 
 class Securities:
     __logger: logging.Logger = logging.getLogger(__name__)
@@ -15,30 +16,41 @@ class Securities:
     def __init__(self) -> None:
         self.__logger.info(f'Open Database "{settings.DB_PATH}"')
         conn = sql.connect(settings.DB_PATH)
-        self.__itmes = []
-        cur = conn.cursor()
-        cur.execute(f'SELECT "コード", "銘柄名", "市場・商品区分", "33業種区分", "17業種区分", "規模区分" FROM {Securities.table()}')
-        self.__itmes = [Security(c[0], c[1], c[2], c[3], c[4], c[5]) for c in cur.fetchall()]
-        conn.close()
-        self.__logger.debug(f'get {len(self.__itmes)} items.')
+        try:
+            self.__items = pd.read_sql(f'SELECT "code", "name", "market", "segment33", "segment17", "scale" FROM {Securities.table()}', conn)
+            self.__logger.debug(f'get {len(self.__items)} items.')
+        except Exception as ex:
+            self.__logger.error(traceback.format_exc())
+            raise
+        finally:
+            conn.close()
 
-    def items(self, market: Market = Market.PRIME) -> Iterator[Security]:
+    def items(self, market: Market = Market.PRIME) -> pd.DataFrame:
         if market is None:
-            return self.__itmes
+            return self.__items
         else:
-            return filter(lambda s: s.market == market.value, self.__itmes)
+            query: str = ' or '.join(map(lambda m: f"market == '{MarketNames[m]}'", [tgt for tgt in Market if market & tgt]))
+            # return self.__items.query(f"market == '{market.value}'")
+            return self.__items.query(query)
 
     def codes(self, market: Market = Market.PRIME, add_t: bool = True) -> Iterator[str]:
         suffix = '.T' if add_t else ''
-        if market is None:
-            return map(lambda s: str(s.code) + suffix, self.__itmes)
-        else:
-            return map(lambda s: str(s.code) + suffix, filter(lambda s: s.market == market.value, self.__itmes))
-
+        return map(lambda s: str(s) + suffix, self.items(market).code)
+    
+    @classmethod
+    def create_table(cls, csv: str = None) -> None:
+        target: str = settings.TSE_PATH if csv is not None else csv
+        symbols = pd.read_csv(target, header=0)
+        symbols.columns = ['date', 'code', 'name', 'market', 'segment33', 'segment33_name', 'segment17', 'segment17_name', 'scale', 'scale_name']
+        symbols.set_index('code', inplace=True)
+        conn = sql.connect(settings.DB_PATH)
+        try:
+            symbols.to_sql(Securities.table(), conn, if_exists='replace')
+        except Exception as e:
+            cls.__logger.error(traceback.format_exc())
+            raise
+        finally:
+            conn.close()
 
 if __name__ == '__main__':
-    symbols = pd.read_csv(sys.argv[1], header=0)
-    symbols.set_index('コード', inplace=True)
-    conn = sql.connect(settings.DB_PATH)
-    symbols.to_sql(Securities.table(), conn, if_exists='replace')
-    conn.close()
+    Securities.create_table(sys.argv[1] if len(sys.argv) == 2 else None) 

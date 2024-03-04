@@ -1,18 +1,45 @@
 import pandas as pd
-from enum import Enum
+from enum import Enum, Flag, auto
 
-class Market(Enum):
-    PRIME = 'プライム（内国株式）'
-    STANDARD = 'スタンダード（内国株式）'
-    GROWTH = 'グロース（内国株式）'
+# class Market(Flag):
+#     PRIME = 'プライム（内国株式）'
+#     STANDARD = 'スタンダード（内国株式）'
+#     GROWTH = 'グロース（内国株式）'
 
-    PRIME_F = 'プライム（外国株式）'
-    STANDARD_F = 'スタンダード（外国株式）'
-    GROWTH_F = 'グロース（外国株式）'
+#     PRIME_F = 'プライム（外国株式）'
+#     STANDARD_F = 'スタンダード（外国株式）'
+#     GROWTH_F = 'グロース（外国株式）'
 
-    ETF = 'ETF・ETN'
-    REIT = 'REIT・ベンチャーファンド・カントリーファンド・インフラファンド'
-    INVESTMENT = '出資証券'
+#     ETF = 'ETF・ETN'
+#     REIT = 'REIT・ベンチャーファンド・カントリーファンド・インフラファンド'
+#     INVESTMENT = '出資証券'
+
+class Market(Flag):
+    NOT_SET = 0
+    PRIME = auto()
+    STANDARD = auto()
+    GROWTH = auto()
+
+    PRIME_F = auto()
+    STANDARD_F = auto()
+    GROWTH_F = auto()
+
+    ETF = auto()
+    REIT = auto()
+    INVESTMENT = auto()
+
+MarketNames = {
+    Market.PRIME: 'プライム（内国株式）',
+    Market.STANDARD: 'スタンダード（内国株式）',
+    Market.GROWTH: 'グロース（内国株式）',
+    Market.PRIME_F: 'プライム（外国株式）',
+    Market.STANDARD_F: 'スタンダード（外国株式）',
+    Market.GROWTH_F: 'グロース（外国株式）',
+    Market.ETF: 'ETF・ETN',
+    Market.REIT: 'REIT・ベンチャーファンド・カントリーファンド・インフラファンド',
+    Market.INVESTMENT: '出資証券'
+}
+
 
 
 

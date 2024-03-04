@@ -18,10 +18,10 @@ class History:
     def __init__(self) -> None:
         pass
 
-    def update(self, securities: Iterable[Security], begin: dt.date, end: dt.date) -> bool:
+    def update(self, securities: Iterable[int], begin: dt.date, end: dt.date) -> bool:
         self.create_table()
         sec = list(securities)
-        tickers = list(map(lambda s: str(s.code) + '.T', sec))
+        tickers = list(map(lambda s: str(s) + '.T', sec))
         self.__logger.info(f'down load data: tickers: {len(tickers)}, begin: {begin}, end: {end}')
         df: pd.DataFrame = yf.download(tickers, start=begin, end=end)
         con = sql.connect(settings.DB_PATH)
@@ -29,11 +29,11 @@ class History:
         try:
             cur = con.cursor()
             for s in sec:
-                history : pd.DataFrame = df.loc[:, (slice(None), [str(s.code) + '.T'], slice(None))]
+                history : pd.DataFrame = df.loc[:, (slice(None), [str(s) + '.T'], slice(None))]
                 history.columns = [col[0] for col in history.columns.values]
 
                 for row in history.itertuples():
-                    data = (row.Index.strftime('%Y-%m-%d'), s.code, row[1], row.Close, row.High, row.Low, row.Open, row.Volume)
+                    data = (row.Index.strftime('%Y-%m-%d'), s, row[1], row.Close, row.High, row.Low, row.Open, row.Volume)
                     cur.execute(stmt, data)
             con.commit()
         except Exception as e:
