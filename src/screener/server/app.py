@@ -1,5 +1,6 @@
 import os
 import json
+import datetime as dt
 import streamlit as st
 import logging
 import logging.config
@@ -14,16 +15,30 @@ def setup_logger() -> logging.Logger:
         logging.config.dictConfig(j)
     return logging.getLogger(__name__)
 
-def main() -> None:
-    logger: logging.Logger = setup_logger()
-    target: Market = None
-    for m in Market:
+def securites():
+    checked: Market = None
+    target = [Market.PRIME, Market.STANDARD, Market.GROWTH]
+    all = Market.PRIME | Market.STANDARD | Market.GROWTH
+
+    for m in target:
         if st.checkbox(MarketNames[m]):
-            target = m if target is None else target | m
+            checked = m if checked is None else checked | m
 
     rep_security = Securities()
-    st.write(rep_security.items(target))
+    if checked is not None:
+        st.write(rep_security.items(checked))
 
+def update():
+    if st.button('DB更新'):
+        s = Securities()
+        h = History()
+        h.update(s.codes(None), h.latest(), dt.date.today())
+
+
+def main() -> None:
+    logger: logging.Logger = setup_logger()
+    update()
+    securites()
 # if st.button()
 
 #スライダー（デフォルトでは0~100）

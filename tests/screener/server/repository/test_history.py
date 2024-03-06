@@ -11,10 +11,10 @@ def db():
     settings.DB_PATH = '/tmp/test.sqlite'
 
 
-def test_update():
+def test_update(securities_only):
     securities = Securities()
     h = History()
-    h.update(islice(securities.items(Market.PRIME), 3), dt.date(2024, 2, 19), dt.date(2024, 2, 25))
+    h.update(securities.codes(Market.PRIME, False)[:3], dt.date(2024, 2, 19), dt.date(2024, 2, 25))
     conn = sql.connect(settings.DB_PATH)
     try:
         cur = conn.cursor()
@@ -23,7 +23,7 @@ def test_update():
     finally:
         conn.close()
 
-def test_create_table():
+def test_create_table(securities_only):
     h = History()
     h.create_table()
     conn = sql.connect(settings.DB_PATH)
@@ -35,9 +35,19 @@ def test_create_table():
     finally:
         conn.close()
 
-def test_get_history():
+def test_get_history(with_history):
     h = History()
     df = h.get_history()
     assert len(df) == 12 
     df = h.get_history(1301)
     assert len(df) == 4
+
+def test_latest(with_history):
+    h = History()
+    actual = h.latest()
+    assert actual == dt.date(2024, 2, 22)
+
+def test_latest_not_found(empty_history):
+    h = History()
+    actual = h.latest()
+    assert actual is None

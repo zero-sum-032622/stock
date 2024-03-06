@@ -17,6 +17,10 @@
         "root": {
             "level": "DEBUG",
             "handlers": ["console"]
+        },
+        "yfinance": {
+            "level": "INFO",
+            "handlers": ["console"]
         }
     }
 }

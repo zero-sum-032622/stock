@@ -4,8 +4,7 @@ import yfinance as yf
 import logging
 import sqlite3 as sql
 import traceback
-from collections.abc import Iterable
-from screener.server.models.security import Security
+from screener.server.repository.securities import Securities
 import settings
 yf.pdr_override()
 
@@ -18,27 +17,29 @@ class History:
     def __init__(self) -> None:
         pass
 
-    def update(self, securities: Iterable[int], begin: dt.date, end: dt.date) -> bool:
+    def update(self, securities: list[str], begin: dt.date, end: dt.date) -> bool:
         self.create_table()
-        sec = list(securities)
-        tickers = list(map(lambda s: str(s) + '.T', sec))
+        tickers = list(map(lambda s: str(s) + '.T', securities))
         self.__logger.info(f'down load data: tickers: {len(tickers)}, begin: {begin}, end: {end}')
-        df: pd.DataFrame = yf.download(tickers, start=begin, end=end)
+        begin_ = begin if begin is not None else dt.date(2023, 1, 1)
+        end_ = end if end is not None else dt.date.today()
+        df: pd.DataFrame = yf.download(tickers, start=begin_, end=end_)
         con = sql.connect(settings.DB_PATH)
         stmt: str = f'REPLACE INTO {self.table()} (date, code, adj_close, close, high, low, open, volume) values(?, ?, ?, ?, ?, ?, ?, ?)'
         try:
             cur = con.cursor()
-            for s in sec:
-                history : pd.DataFrame = df.loc[:, (slice(None), [str(s) + '.T'], slice(None))]
+            for s in securities:
+                history : pd.DataFrame = df.loc[:, (slice(None), [s + '.T'], slice(None))]
                 history.columns = [col[0] for col in history.columns.values]
 
                 for row in history.itertuples():
-                    data = (row.Index.strftime('%Y-%m-%d'), s, row[1], row.Close, row.High, row.Low, row.Open, row.Volume)
+                    data = (row.Index.strftime('%Y-%m-%d'), int(s), row[1], row.Close, row.High, row.Low, row.Open, row.Volume)
                     cur.execute(stmt, data)
             con.commit()
         except Exception as e:
             con.rollback()
             self.__logger.error(traceback.format_exc())
+            raise
         finally:
             con.close()
 
@@ -50,6 +51,7 @@ class History:
             df = pd.read_sql_query(query, con)
         except Exception as e:
             self.__logger.error(traceback.format_exc())
+            raise
         finally:
             con.close()
         return df
@@ -58,10 +60,14 @@ class History:
         con = sql.connect(settings.DB_PATH)
         try:
             cur = con.cursor() 
-            cur.execute('SELECT MAX(date)')
+            cur.execute(f'SELECT MAX(date) FROM {History.table()}')
+            found = cur.fetchone()[0]
+            retval = None if found is None else dt.datetime.strptime(found, '%Y-%m-%d').date()
             cur.close()
+            return retval
         except Exception as e:
             self.__logger.error(traceback.format_exc())
+            raise
         finally:
             con.close()
 
@@ -89,25 +95,14 @@ class History:
         except Exception as e:
             conn.rollback()
             self.__logger.error(traceback.format_exc())
+            raise
         finally:
             conn.close()
-
-        
-
 
     def select(self, code: int) -> pd.DataFrame:
         pass
 
-# ifname: str = sys.argv[1]
-# ofname: str = sys.argv[2]
-
-
-# stock_name = utils.get_codes()
-# base = pd.read_csv(ifname, header=[0, 1, 2], index_col=0, parse_dates=True)
-# if base.index[-1].date() < dt.date.today():
-#     df: pd.DataFrame = yf.download(stock_name, start=base.index[-1] + dt.timedelta(1), end=dt.date.today(), interval='1d')
-#     for idx in df.index:
-#         base.loc[idx] = df.loc[idx]
-#     base.to_csv(ofname)
-# else:
-    # print(f'{ifname} is up to date.')
+if __name__ == '__main__':
+    s = Securities()
+    h = History()
+    h.update(s.codes(None), h.latest(), dt.date.today())

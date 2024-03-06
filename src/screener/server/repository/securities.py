@@ -18,6 +18,7 @@ class Securities:
         conn = sql.connect(settings.DB_PATH)
         try:
             self.__items = pd.read_sql(f'SELECT "code", "name", "market", "segment33", "segment17", "scale" FROM {Securities.table()}', conn)
+            self.__items.set_index('code', inplace=True)
             self.__logger.debug(f'get {len(self.__items)} items.')
         except Exception as ex:
             self.__logger.error(traceback.format_exc())
@@ -33,9 +34,10 @@ class Securities:
             # return self.__items.query(f"market == '{market.value}'")
             return self.__items.query(query)
 
-    def codes(self, market: Market = Market.PRIME, add_t: bool = True) -> Iterator[str]:
+    def codes(self, market: Market = Market.PRIME, add_t: bool = False) -> list[str]:
         suffix = '.T' if add_t else ''
-        return map(lambda s: str(s) + suffix, self.items(market).code)
+        # return map(lambda s: str(s) + suffix, self.items(market).code)
+        return [str(c) + suffix for c in self.items(market).index]
     
     @classmethod
     def create_table(cls, csv: str = None) -> None:
@@ -45,7 +47,7 @@ class Securities:
         symbols.set_index('code', inplace=True)
         conn = sql.connect(settings.DB_PATH)
         try:
-            symbols.to_sql(Securities.table(), conn, if_exists='replace')
+            symbols.to_sql(Securities.table(), conn, if_exists='replace', index=True)
         except Exception as e:
             cls.__logger.error(traceback.format_exc())
             raise
