@@ -37,8 +37,6 @@ def test_create_table(securities_only):
 
 def test_get_history(with_history):
     h = History()
-    df = h.get_history()
-    assert len(df) == 12 
     df = h.get_history(1301)
     assert len(df) == 4
 

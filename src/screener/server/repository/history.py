@@ -43,8 +43,8 @@ class History:
         finally:
             con.close()
 
-    def get_history(self, code: str = None) -> pd.DataFrame:
-        query = f'SELECT date, code, close high, low, open, volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
+    def get_history(self, code: int) -> pd.DataFrame:
+        query = f'SELECT date as time, close, high, low, open, volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
         self.__logger.debug(f'query = {query}')
         con = sql.connect(settings.DB_PATH)
         try:

@@ -4,10 +4,11 @@ import datetime as dt
 import streamlit as st
 import logging
 import logging.config
+import streamlit_lightweight_charts as charts
 
 from screener.server.repository.securities import Securities, Market, MarketNames
 from screener.server.repository.history import History
-from screener.server.models.security import Security
+import screener.server.charts.ohlc as ohlc
 
 def setup_logger() -> logging.Logger:
     with open(os.path.join(os.path.dirname(__file__), 'logging.json'), 'r', encoding='utf-8') as f:
@@ -15,7 +16,7 @@ def setup_logger() -> logging.Logger:
         logging.config.dictConfig(j)
     return logging.getLogger(__name__)
 
-def securites():
+def securites(s: Securities):
     checked: Market = None
     target = [Market.PRIME, Market.STANDARD, Market.GROWTH]
     all = Market.PRIME | Market.STANDARD | Market.GROWTH
@@ -24,21 +25,33 @@ def securites():
         if st.checkbox(MarketNames[m]):
             checked = m if checked is None else checked | m
 
-    rep_security = Securities()
     if checked is not None:
-        st.write(rep_security.items(checked))
+        st.write(s.items(checked))
 
-def update():
+def update(s: Securities, h: History):
     if st.button('DB更新'):
-        s = Securities()
-        h = History()
         h.update(s.codes(None), h.latest(), dt.date.today())
 
 
 def main() -> None:
     logger: logging.Logger = setup_logger()
-    update()
-    securites()
+    logger.debug("start.")
+    securities = Securities()
+    history = History()
+
+    with st.sidebar:
+        update(securities, history)
+        securites(securities)
+
+    tab_chart, tab_table = st.tabs(["Chart", "Table"]) 
+    d = history.get_history(5831)
+    d.dropna()
+    with tab_chart:
+        subheder, data = ohlc.ohlc_chart(d)
+        st.subheader(subheder)
+        charts.renderLightweightCharts(data, "multipane")
+    with tab_table:
+        st.write(d)
 # if st.button()
 
 #スライダー（デフォルトでは0~100）
