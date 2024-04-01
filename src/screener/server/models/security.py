@@ -1,5 +1,5 @@
 import pandas as pd
-from enum import Enum, Flag, auto
+from enum import Enum, IntFlag, auto
 
 # class Market(Flag):
 #     PRIME = 'プライム（内国株式）'
@@ -14,8 +14,7 @@ from enum import Enum, Flag, auto
 #     REIT = 'REIT・ベンチャーファンド・カントリーファンド・インフラファンド'
 #     INVESTMENT = '出資証券'
 
-class Market(Flag):
-    NOT_SET = 0
+class Market(IntFlag):
     PRIME = auto()
     STANDARD = auto()
     GROWTH = auto()
@@ -27,6 +26,14 @@ class Market(Flag):
     ETF = auto()
     REIT = auto()
     INVESTMENT = auto()
+    @staticmethod
+    def label2flag(label: str):
+        for m in Market:
+            if MarketNames[m] == label:
+                return m
+            
+        return 0
+
 
 MarketNames = {
     Market.PRIME: 'プライム（内国株式）',

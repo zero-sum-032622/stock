@@ -10,6 +10,14 @@ from screener.server.repository.securities import Securities, Market, MarketName
 from screener.server.repository.history import History
 import screener.server.charts.ohlc as ohlc
 
+with open(os.path.join(os.path.dirname(__file__), 'logging.json'), 'r', encoding='utf-8') as f:
+    j = json.load(f)
+    logging.config.dictConfig(j)
+
+logger: logging.Logger = logging.getLogger(__name__)
+
+
+
 def setup_logger() -> logging.Logger:
     with open(os.path.join(os.path.dirname(__file__), 'logging.json'), 'r', encoding='utf-8') as f:
         j = json.load(f)
@@ -17,16 +25,13 @@ def setup_logger() -> logging.Logger:
     return logging.getLogger(__name__)
 
 def securites(s: Securities):
-    checked: Market = None
-    target = [Market.PRIME, Market.STANDARD, Market.GROWTH]
-    all = Market.PRIME | Market.STANDARD | Market.GROWTH
-
-    for m in target:
-        if st.checkbox(MarketNames[m]):
-            checked = m if checked is None else checked | m
-
-    if checked is not None:
-        st.write(s.items(checked))
+    selected = st.multiselect("市場・商品区分", [MarketNames[m] for m in Market], MarketNames[Market.PRIME])
+    flags = 0
+    for sel in selected:
+        flags |= Market.label2flag(sel)
+    
+    if flags != 0:
+        st.write(s.items(flags))
 
 def update(s: Securities, h: History):
     if st.button('DB更新'):
@@ -34,8 +39,10 @@ def update(s: Securities, h: History):
 
 
 def main() -> None:
-    logger: logging.Logger = setup_logger()
     logger.debug("start.")
+
+    st.set_page_config(layout="wide")
+
     securities = Securities()
     history = History()
 

@@ -15,7 +15,7 @@ def ohlc_chart(df: pd.DataFrame):
 
     chartMultipaneOptions = [
         {
-            "width": 600,
+            "width": 800,
             "height": 400,
             "layout": {
                 "background": {
@@ -52,7 +52,7 @@ def ohlc_chart(df: pd.DataFrame):
             }
         },
         {
-            "width": 600,
+            "width": 800,
             "height": 100,
             "layout": {
                 "background": {
