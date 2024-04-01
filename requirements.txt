@@ -7,3 +7,4 @@ pytest-cov
 pytest-mock
 streamlit
 streamlit-lightweight-charts
+Ta-Lib

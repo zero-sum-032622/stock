@@ -7,5 +7,12 @@ RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bi
     && rm -rf /tmp/conda-tmp
 
 # [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends 
+
+WORKDIR /tmp
+RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz && tar -zxvf ta-lib-0.4.0-src.tar.gz
+WORKDIR /tmp/ta-lib
+RUN ./configure --prefix=/usr && make && make install
+WORKDIR /tmp
+RUN rm -rf /tmp/ta-lib-0.4.0-src.tar.gz /tmp/ta-lib
