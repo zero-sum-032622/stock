@@ -43,8 +43,11 @@ class History:
         finally:
             con.close()
 
-    def get_history(self, code: int) -> pd.DataFrame:
-        query = f'SELECT date as time, close, high, low, open, volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
+    def get_history(self, code: int, tradingview:bool = False) -> pd.DataFrame:
+        if tradingview:
+            query = f'SELECT date as time, open, high, low, close, volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
+        else:
+            query = f'SELECT date as Date, open as Open, high as High, low as Low, close as Close, volume as Volume FROM {self.table()}' + (f" WHERE code = '{code}'" if code is not None else '')
         self.__logger.debug(f'query = {query}')
         con = sql.connect(settings.DB_PATH)
         try:
@@ -54,6 +57,9 @@ class History:
             raise
         finally:
             con.close()
+        if not tradingview:
+            df['Date'] = pd.to_datetime(df['Date'])
+            df.set_index('Date', inplace=True)
         return df
 
     def latest(self) -> dt.date:

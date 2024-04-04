@@ -51,7 +51,7 @@ def main() -> None:
         securites(securities)
 
     tab_chart, tab_table = st.tabs(["Chart", "Table"]) 
-    d = history.get_history(5831)
+    d = history.get_history(5831, True)
     d.dropna()
     with tab_chart:
         subheder, data = ohlc.ohlc_chart(d)
