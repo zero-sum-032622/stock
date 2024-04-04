@@ -1,4 +1,4 @@
-import screener.server.repository.history as history
+import screener.repository.history as history
 import pandas as pd
 import numpy as np
 import json

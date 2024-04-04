@@ -1,6 +1,6 @@
 import sys
-from screener.server.repository.history import History
-from screener.server.repository.securities import Securities
+from screener.repository.history import History
+from screener.repository.securities import Securities
 
 if __name__ == "__main__":
     h = History()

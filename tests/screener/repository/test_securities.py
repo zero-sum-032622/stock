@@ -1,5 +1,5 @@
 import pytest
-from screener.server.repository.securities import Securities, Market
+from screener.repository.securities import Securities, Market
 
 def test_constructor(securities_only) -> None:
     sec = Securities()

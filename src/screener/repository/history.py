@@ -4,7 +4,7 @@ import yfinance as yf
 import logging
 import sqlite3 as sql
 import traceback
-from screener.server.repository.securities import Securities
+from screener.repository.securities import Securities
 import settings
 yf.pdr_override()
 

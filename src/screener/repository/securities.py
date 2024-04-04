@@ -5,7 +5,7 @@ import logging
 import traceback
 from collections.abc import Iterator
 import settings
-from screener.server.models.security import Security, Market, MarketNames
+from screener.models.security import Security, Market, MarketNames
 
 class Securities:
     __logger: logging.Logger = logging.getLogger(__name__)

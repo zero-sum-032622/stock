@@ -6,9 +6,9 @@ import logging
 import logging.config
 import streamlit_lightweight_charts as charts
 
-from screener.server.repository.securities import Securities, Market, MarketNames
-from screener.server.repository.history import History
-import screener.server.charts.ohlc as ohlc
+from screener.repository.securities import Securities, Market, MarketNames
+from screener.repository.history import History
+import screener.charts.ohlc as ohlc
 
 with open(os.path.join(os.path.dirname(__file__), 'logging.json'), 'r', encoding='utf-8') as f:
     j = json.load(f)

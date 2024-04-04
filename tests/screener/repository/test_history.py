@@ -3,8 +3,8 @@ from itertools import islice
 import datetime as dt
 import sqlite3 as sql
 import settings
-from screener.server.repository.history import History
-from screener.server.repository.securities import Securities, Market
+from screener.repository.history import History
+from screener.repository.securities import Securities, Market
 
 @pytest.fixture(scope='session')
 def db():

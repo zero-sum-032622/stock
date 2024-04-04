@@ -3,8 +3,8 @@ import shutil
 import os
 import tempfile
 import settings
-from screener.server.repository.history import History
-from screener.server.repository.securities import Securities
+from screener.repository.history import History
+from screener.repository.securities import Securities
 
 SECURITIES_ONLY='libs/securities_only.sqlite'
 EMPTY_HISTORY='libs/empty_history.sqlite'
