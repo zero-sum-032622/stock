@@ -4,6 +4,7 @@
     // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: 現在のファイル",
             "type": "python",
@@ -30,6 +31,23 @@
             "args": [
                 "run",
                 "src/screener/app.py"
+            ]
+        },
+        {
+            "name": "PygWalker",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}",
+            "purpose": ["debug-test"],
+            "env": {
+                "PYTEST_ADDOPTS": "--no-cov"
+            },
+            "args": [
+                "run",
+                "src/screener/pygwalker_demo.py"
             ]
         }
     ]
