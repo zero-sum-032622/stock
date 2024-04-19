@@ -10,7 +10,16 @@ class Analyzer:
         col = name if name is not None else f'sma{timeperiod:02}'
         self.df[col] = ta.SMA(self.df.Close, timeperiod = timeperiod)
         return self
-    
+
+    def pct_change(self, columns: list[str]) -> Analyzer:
+        for col in columns:
+            self.df[col + '_gra'] = self.df[col].pct_change()
+        return self
+
+    def diff(self, lhs: str, rhs: str) -> Analyzer:
+        self.df[f'd_{lhs}_{rhs}'] = self.df[lhs] - self.df[rhs]
+        return self
+
     def add_macd(self, fast: int, slow: int, signal: int, name: str = None) -> Analyzer:
         col = name if name is not None else f'macd{slow:02}_{fast:02}_{signal:02}'
         self.df[col], self.df[col + 'sig'], self.df[col + 'his'] = ta.MACD(self.df.Close, fastperiod=fast, slowperiod=slow, signalperiod=signal)
@@ -84,7 +93,7 @@ class Analyzer:
 
         switch.reverse()
         zigzag.reverse()
-        self.df.drop(columns=['trend', 'provisional'])
+        self.df = self.df.drop(columns=['trend', 'provisional'])
         self.df['zigzag'] = zigzag
         self.df['zigzag'].interpolate(inplace=True)
         self.df['switch'] = switch

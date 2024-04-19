@@ -6,3 +6,4 @@ TSE.csv:Zone.Identifier
 .coverage
 coverage.xml
 src/db.sqlite
+output

@@ -13,7 +13,7 @@ st.set_page_config(
 )
  
 # タイトルを追加
-st.title("StreamlitでPygwalkerを使う")
+# st.title("StreamlitでPygwalkerを使う")
  
 # データをインポートする
 h = History()
@@ -25,10 +25,14 @@ a.add_sma(5) \
     .add_rsi(10, 'rsi') \
     .add_macd(5, 20, 5, 'macd') \
     .add_bb(5, 'bb') \
-    .add_zigzag(0.02)
- 
+    .add_zigzag(0.01) \
+    .pct_change(['sma05', 'sma20', 'sma50', 'Open', 'Close', 'High', 'Low']) \
+    .diff('sma05', 'sma20') \
+    .diff('sma20', 'sma50')
+
+
 # Pygwalkerを使用してHTMLを生成する
-pyg_html = pyg.to_html(a.df)
+pyg_html = pyg.to_html(a.df[50:])
  
 # HTMLをStreamlitアプリケーションに埋め込む
-components.html(pyg_html, height=1000, scrolling=True)
+components.html(pyg_html, height=1200, scrolling=True)
