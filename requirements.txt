@@ -9,3 +9,4 @@ streamlit
 streamlit-lightweight-charts
 Ta-Lib
 pygwalker
+cython
