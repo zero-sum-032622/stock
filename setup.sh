@@ -1,6 +1,6 @@
 #!/bin/bash
 pip install -r requirements.txt
-sudo apt-get update && sudo apt-get upgrade && sudo apt-get install -y build-essential python-dev
+sudo apt-get update && sudo apt-get upgrade && sudo apt-get install -y build-essential python-dev xclip
 
 git clone https://github.com/minepy/minepy.git
 cd minepy

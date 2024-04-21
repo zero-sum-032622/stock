@@ -5,7 +5,11 @@ import talib as ta
 class Analyzer:
     def __init__(self, df: pd.DataFrame) -> None:
         self.df = df
-    
+
+    def normalize(self, target: str, nominal: str) -> Analyzer:
+        self.df[target + '_nom'] = self.df[target] / self.df[nominal]
+        return self
+
     def add_sma(self, timeperiod: int, name: str = None) -> Analyzer:
         col = name if name is not None else f'sma{timeperiod:02}'
         self.df[col] = ta.SMA(self.df.Close, timeperiod = timeperiod)
@@ -16,8 +20,11 @@ class Analyzer:
             self.df[col + '_gra'] = self.df[col].pct_change()
         return self
 
-    def diff(self, lhs: str, rhs: str) -> Analyzer:
-        self.df[f'd_{lhs}_{rhs}'] = self.df[lhs] - self.df[rhs]
+    def diff(self, lhs: str, rhs: str, nominal: str) -> Analyzer:
+        if nominal is None:
+            self.df[f'd_{lhs}_{rhs}'] = self.df[lhs] - self.df[rhs]
+        else:
+            self.df[f'd_{lhs}_{rhs}'] = (self.df[lhs] - self.df[rhs]) / self.df[nominal]
         return self
 
     def add_macd(self, fast: int, slow: int, signal: int, name: str = None) -> Analyzer:

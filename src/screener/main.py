@@ -30,14 +30,14 @@ def analyze(h: History, s: tuple):
         .add_zigzag(0.01) \
         .pct_change(['sma05', 'sma20', 'sma50', 'Open', 'Close', 'High', 'Low']) \
         .diff('sma05', 'sma20') \
-        .diff('sma20', 'sma50')
-        # .add_bb(5, 'bb') \
+        .diff('sma20', 'sma50') \
+        .normalize('Open', 'Close') \
+        .normalize('High', 'Close') \
+        .normalize('Low', 'Close')
+
     a.df['code'] = s[0]
     a.df['name'] = s[1]
     a.df['market'] = s[2]
-    # a.df['seg33'] = s[3]
-    # a.df['seg17'] = s[4]
-    # a.df['scale'] = s[5]
 
     a.df[50:].to_csv(os.path.join(sys.argv[1], f'{s[0]}.csv'), float_format='%.6g')
 
@@ -45,25 +45,3 @@ if __name__ == '__main__':
     securities = Securities()
     h = History()
     joblib.Parallel(n_jobs=-1)(joblib.delayed(analyze)(h, s) for s in securities.items().itertuples())
-    # for s in securities.items(None).itertuples():
-    #     joblib.Parallel(n_jobs=-1)
-    #     a = Analyzer(h.get_history(s[0]))
-    #     a.add_sma(5) \
-    #         .add_sma(20) \
-    #         .add_sma(50) \
-    #         .add_rsi(10, 'rsi') \
-    #         .add_macd(5, 20, 5, 'macd') \
-    #         .add_bb(5, 'bb') \
-    #         .add_zigzag(0.01) \
-    #         .pct_change(['sma05', 'sma20', 'sma50', 'Open', 'Close', 'High', 'Low']) \
-    #         .diff('sma05', 'sma20') \
-    #         .diff('sma20', 'sma50')
-    #     a.df['code'] = s[0]
-    #     a.df['name'] = s[1]
-    #     a.df['market'] = s[2]
-    #     a.df['seg33'] = s[3]
-    #     a.df['seg17'] = s[4]
-    #     a.df['scale'] = s[5]
-
-    #     a.df[50:].to_csv(os.path.join(sys.argv[1], 'test.csv'))
-    
